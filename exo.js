@@ -54,6 +54,18 @@ class Map {
   }
 
   getColoredMap() {
-    // TODO: That's where you work
+    var coloredMap = [];
+    for (var i = 0; i < this.map.length; i++) {
+      var row = [];
+      for (var j = 0; j < this.map[i].length; j++) {
+        var color = DEFAULT_COLORS[this.map[i][j]];
+        if (this.map[i][j] === EARTH_POINT_TYPE) {
+          color = this.generateRandomColor();
+        }
+        row.push(color);
+      }
+      coloredMap.push(row);
+    }
+    return coloredMap;
   }
 }
