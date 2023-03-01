@@ -54,56 +54,34 @@ class Map {
   }
 
   getColoredMap() {
-    var islands = this.getIslands();
+    var map = this.map.map((data) => [...data]);
 
-    var coloredMap = [];
-    for (var i = 0; i < this.map.length; i++) {
-      var row = [];
-      for (var j = 0; j < this.map[i].length; j++) {
-        if (this.map[i][j] === EARTH_POINT_TYPE) {
-          var island = islands[[i, j]];
-          row.push(island.color);
-        } else {
-          row.push(DEFAULT_COLORS[WATER_POINT_TYPE]);
-        }
+    const createIsland = (x, y, color) => {
+      if (
+        x >= 0 &&
+        y >= 0 &&
+        x < map.length &&
+        y < map[x].length &&
+        map[x][y] === EARTH_POINT_TYPE
+      ) {
+        map[x][y] = color;
+        createIsland(x + 1, y, color);
+        createIsland(x, y + 1, color);
+        createIsland(x - 1, y, color);
+        createIsland(x, y - 1, color);
       }
-      coloredMap.push(row);
-    }
-    return coloredMap;
-  }
+    };
 
-  getIslands() {
-    var islands = {};
-    for (var i = 0; i < this.map.length; i++) {
-      for (var j = 0; j < this.map[i].length; j++) {
-        if (this.map[i][j] === EARTH_POINT_TYPE) {
-          var island = undefined;
-          var neighborColors = [];
-          if (i > 0 && this.map[i - 1][j] === EARTH_POINT_TYPE) {
-            var leftEarth = islands[[i - 1, j]];
-            if (leftEarth !== undefined) {
-              island = leftEarth;
-              neighborColors.push(leftEarth.color);
-            }
-          }
-          if (j > 0 && this.map[i][j - 1] === EARTH_POINT_TYPE) {
-            var earthAbove = islands[[i, j - 1]];
-
-            if (earthAbove !== undefined) {
-              island = earthAbove;
-              neighborColors.push(earthAbove.color);
-            }
-          }
-          if (island === undefined) {
-            var color = this.generateRandomColor();
-            island = { color: color };
-          }
-          islands[[i, j]] = island;
-          var color = island.color;
-          island.color = color;
+    for (let i = 0; i < map.length; i++) {
+      for (let j = 0; j < map[i].length; j++) {
+        const block = map[i][j];
+        if (block == WATER_POINT_TYPE) {
+          map[i][j] = DEFAULT_COLORS[block];
+        } else if (block == EARTH_POINT_TYPE) {
+          createIsland(i, j, this.generateRandomColor());
         }
       }
     }
-    return islands;
+    return map;
   }
 }
